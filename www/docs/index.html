@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>WEB UI</title>
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link href="style/vue.css" rel="stylesheet">
+  <link rel="stylesheet" href="style/style.css">
+  <script src="js/jquery.min.js"></script>
+  <script src="js/underscore-min.js"></script>
+  <script src="js/echarts.min.js"></script>
+  <script src="../libs/echarts/walden.js"></script>
+  <script src="js/clipboard.min.js"></script>
+  <script src="js/base.js"></script>
+</head>
+
+<body>
+  <nav>
+    <a href="#/" class="abutton">文档首页</a>
+    <a href="javascript:refreshDocs()" class="abutton">Refresh Docs</a>
+  </nav>
+  <div id="app">
+  </div>
+</body>
+<script>
+window.$docsify = initDoc("WEB UI Team Docs")
+</script>
+<script src="js/docsify.min.js"></script>
+
+</html>

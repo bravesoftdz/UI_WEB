@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<meta name="viewport" content="user-scalable=no">
+	<script type="text/javascript" src="https://cdn.bootcss.com/vue/2.3.4/vue.min.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/underscore.js/1.8.3/underscore-min.js"></script>
+	<script src="https://cdn.bootcss.com/moment.js/2.19.0/moment.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/xcode.min.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+	<script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+	<script>
+		hljs.initHighlightingOnLoad();
+	</script>
+	<script>
+		//document.write("<script type='text/javascript' src='./data.js?"+Math.random()+"'><\/script>");
+	</script>
+	<script src="./js/apiList.js"></script>
+	<title></title>
+	<style>
+		.containers {
+			margin: 0px 0px;
+			padding: 10px 10px;
+			font-size: 12px;
+		}
+
+		.table>thead>tr>th,
+		.table>tbody>tr>th,
+		.table>tfoot>tr>th,
+		.table>thead>tr>td,
+		.table>tbody>tr>td,
+		.table>tfoot>tr>td {
+			padding: 8px;
+			line-height: 1.428571429;
+			vertical-align: middle;
+			border-top: 1px solid #ddd;
+		}
+
+		ul li {
+			margin-bottom: 1px
+		}
+
+		pre {
+			width: auto;
+			overflow: hidden;
+		}
+
+		table pre {
+			max-width: 540px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app">
+		<div class="container">
+			<div v-for="(modules, moduleName) in apiList">
+				<h3>{{moduleName}}</h3>
+				<div class="panel-group" :id="k+'_id'" role="tablist" aria-multiselectable="true" v-for="(i,k) in modules">
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" :id="'heading'+k">
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" :data-parent="'#'+k+'_id'" :href="'#collapse'+k" aria-expanded="true" :aria-controls="'collapse'+k">
+									{{k}}
+								</a>
+							</h4>
+						</div>
+						<div :id="'collapse'+k" class="panel-collapse collapse" role="tabpanel" :aria-labelledby="'heading'+k">
+							<div class="panel-body">
+								<p class="alert alert-info">{{i.brief}}</p>
+
+								<b>request:</b>
+								<br/>
+								<pre>
+								<code v-html="getRequest(k,i.request.data)"></code>
+							</pre>
+								<table class="table table-striped table-bordered" v-if="_has(i.request,'params')&&!_isEqual(i.request.params,{})">
+									<tr>
+										<td>
+											<b>parameter:</b>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<ul v-if="!!i.request.params" v-for="(parameter,key) in i.request.params">
+												<li>
+													<code>{{key}}</code>: {{parameter.brief}}</li>
+												<ul style="display:none">
+													<li>
+														<span class="label label-default">brief</span>
+														<span class="text-success" role="alert">{{parameter.brief}}</span>
+													</li>
+												</ul>
+												<ul v-if="_has(parameter,'unit')" style="display:none">
+													<li>
+														<span class="label label-default">unit</span> {{parameter.unit}}</li>
+												</ul>
+												<ul v-if="_isObject(parameter.item)" v-for="(v1,k1) in parameter.item">
+													<li>
+														<code>{{k1}}</code>: {{v1}}</li>
+												</ul>
+												<ul v-if="_isObject(parameter.item)" style="display:none">
+													<li>
+														<span class="label label-default">item</li>
+													<ul v-for="(v1,k1) in parameter.item">
+														<li>
+															<code>{{k1}}</code>: {{v1}}</li>
+													</ul>
+												</ul>
+
+											</ul>
+										</td>
+									</tr>
+								</table>
+								<br/>
+								<b>response:</b>
+								<br/>
+								<table class="table table-striped table-bordered">
+									<tr>
+										<th>
+											<b>Data:</b>
+										</th>
+										<th>
+											<b>actual result</b>
+											<div style="display:none">
+													<button type="button" class="btn btn-primary btn-sm" @click="httpaxios(moduleName,getRequest(k,i.request.data))">Send</button>
+													<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" @click="showDebug(getRequest(k,i.request.data))">
+														debug
+													</button>
+											</div>	
+										</th>
+									</tr>
+									<tr>
+										<td>
+											<pre>
+											<code v-html="getResponse(i.response.data)"></code>
+											</pre>
+										</td>
+										<td>
+											<pre>
+											<code v-html="i.response.result"></code>
+											</pre>
+										</td>
+									</tr>
+								</table>
+
+								<table class="table table-striped table-bordered" v-if="_has(i.response,'params')&&!_isEqual(i.response.params,{})">
+									<tr>
+										<td>
+											<b>parameter:</b>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<ul v-if="!!i.response.params" v-for="(parameter,key) in i.response.params">
+												<li>
+													<code>{{key}}</code>: {{parameter.brief}}</li>
+												<ul style="display:none">
+													<li>
+														<span class="label label-default">brief</span>
+														<span class="text-success" role="alert">{{parameter.brief}}</span>
+													</li>
+												</ul>
+												<ul v-if="_has(parameter,'unit')" style="display:none">
+													<li>
+														<span class="label label-default">unit</span> {{parameter.unit}}</li>
+												</ul>
+												<ul v-if="_isObject(parameter.item)" v-for="(v1,k1) in parameter.item">
+													<li>
+														<code>{{k1}}</code>: {{v1}}</li>
+												</ul>
+												<ul v-if="_isObject(parameter.item)" style="display:none">
+													<li>
+														<span class="label label-default">item</li>
+													<ul v-for="(v1,k1) in parameter.item">
+														<li>
+															<code>{{k1}}</code>: {{v1}}</li>
+													</ul>
+												</ul>
+
+											</ul>
+
+										</td>
+									</tr>
+								</table>
+
+								<table class="table table-striped table-bordered">
+									<tr>
+										<td colspan="2">
+											<b>error code:</b>
+										</td>
+									</tr>
+									<tr v-if="!!i.errorCode" v-for="(msg,key) in i.errorCode">
+										<td>{{key}}</td>
+										<td>{{msg}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Button trigger modal -->
+			
+
+			<!-- Modal -->
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel">{{currentDebugApi.method}}</h4>
+						</div>
+						<div class="modal-body">
+							<b>request:</b>
+							<textarea cols="76" rows="12" v-model="debugData"></textarea>
+							<div>
+								<b>response:</b>
+								<pre>
+										<code v-html="debugResult"></code>
+									</pre>
+							</div>
+							
+							<div v-if="isLoading">
+									<p class="bg-info">Loading....</p>
+								</div>
+						</div>
+						<div class="alert alert-danger" role="alert" style="margin: 0 20px">
+							SIM卡相关操作请确认输入的PIN或者PUK码的准确性，否则会导致SIM无法使用
+							
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary" @click="apiDebug()" :disabled="isLoading">Send API</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			new Vue({
+				el: '#app',
+				data: {
+					apiList: apiList,
+					debugData:"",
+					isLoading:false,
+					currentDebugApi:{},
+					debugResult:""
+				},
+				created: function () {},
+				methods: {
+					_isObject: _.isObject,
+					_has: _.has,
+					_isEqual: _.isEqual,
+					moment: moment,
+					getRequest(apiNane, data) {
+						return {
+							"jsonrpc": "2.0",
+							"method": apiNane,
+							"params": data,
+							"id": "1.1"
+						}
+					},
+					getResponse(data) {
+						return {
+							"jsonrpc": "2.0",
+							"result": data || {},
+							"id": "1.1"
+						}
+					},
+					getType(val) {
+						return $.type(val)
+					},
+					showDebug(data){
+						this.currentDebugApi = data;
+						this.debugData = JSON.stringify(data, null, 4)
+						this.debugResult = ""
+					},
+					apiDebug() {
+						var vm = this;
+						var httpConfig = {
+							headers: {
+								'_TclRequestVerificationKey': 'KSDHSDFOGQ5WERYTUIQWERTYUISDFG1HJZXCVCXBN2GDSMNDHKVKFsVBNf',
+								'_TclRequestVerificationToken': 'df76cgho1241Y[YZ',
+							},
+							timeout: 4000
+						};
+
+						var postData = {}
+						try{
+							postData=JSON.parse(vm.debugData)
+						}catch(err){
+							vm.debugResult =  {
+								error: "数据格式错误"
+							}
+							return;
+						}
+						vm.isLoading = true;
+						axios.post('/jrd/webapi', postData, httpConfig).then(function (res) {
+							console.log(res.data)
+							vm.debugResult = res.data
+							vm.isLoading = false;
+							vm.$nextTick(function () {
+								hljs.initHighlightingOnLoad();
+							})
+						}).catch(function (err) {
+							console.log(err)
+							vm.isLoading = false;
+							vm.debugResult =  {
+								error: "The API does not support"
+							}
+						})
+					},
+
+					httpaxios(moduleName, data) {
+						var vm = this;
+						var httpConfig = {
+							headers: {
+								'_TclRequestVerificationKey': 'KSDHSDFOGQ5WERYTUIQWERTYUISDFG1HJZXCVCXBN2GDSMNDHKVKFsVBNf',
+								'_TclRequestVerificationToken': 'df76cgho1241Y[YZ',
+							},
+							timeout: 4000
+						};
+
+						if (_.indexOf(["UnlockPin", "UnlockPuk", "ChangePinCode", "ChangePinState", "SetAutoValidatePinState",
+								"UnlockSimlock"
+							], data.method) != -1) {
+							vm.apiList[moduleName][data.method]["response"].result = {
+								error: "The API 不合适在此调试"
+							}
+							return;
+						}
+						axios.post('/jrd/webapi', data, httpConfig).then(function (res) {
+							console.log(res.data)
+							vm.apiList[moduleName][data.method]["response"].result = res.data
+
+							vm.$nextTick(function () {
+								hljs.initHighlightingOnLoad();
+							})
+						}).catch(function (err) {
+							console.log(err)
+							vm.apiList[moduleName][data.method]["response"].result = {
+								error: "设备未连接或是该API不支持"
+							}
+						})
+					}
+				}
+			})
+		</script>
+</body>
+
+</html>

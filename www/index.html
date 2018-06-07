@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <meta name="viewport" content="user-scalable=no">
+  <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/iview/2.4.0/styles/iview.css">
+  <script type="text/javascript" src="https://cdn.bootcss.com/vue/2.3.4/vue.min.js"></script>
+  <script src="https://cdn.bootcss.com/iview/2.4.0/iview.min.js"></script>
+  <link href="https://cdn.bootcss.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/underscore.js/1.8.3/underscore-min.js"></script>
+  <script src="https://cdn.bootcss.com/moment.js/2.19.0/moment.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+  <script>
+    //document.write("<script type='text/javascript' src='./data.js?"+Math.random()+"'><\/script>");
+  </script>
+  <script src="./data.js"></script>
+  <title></title>
+  <style>
+    .containers {
+      margin: 0px 0px;
+      padding: 10px 10px;
+      font-size: 12px;
+    }
+
+    .table>thead>tr>th,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td,
+    .table>tbody>tr>td,
+    .table>tfoot>tr>td {
+      padding: 8px;
+      line-height: 1.428571429;
+      vertical-align: middle;
+      border-top: 1px solid #ddd;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="containers">
+      <h3>{{tableName}}</h3>
+      <table class="table" valign="middle">
+        <tbody valign="middle">
+          <tr>
+            <th v-for="(v,k) in dataTh">
+              {{v}}
+            </th>
+          </tr>
+          <tr v-for="li in list" :class="{'bg-info': li.actual_time!=='','bg-warning': li.plan_time!==''&li.actual_time===''&moment(date).unix()<moment(li.plan_time).unix(),'bg-danger': li.plan_time!==''&li.actual_time==''&moment(date).unix()>moment(li.plan_time).unix() }">
+            <td v-for="(v,k) in dataTh" style="max-width:160px">
+              <span v-else-if="k=='theme'">{{li[k]}}</span>
+              <span v-if="k=='owner'">
+                <span v-if="li[k]==''" class="label1 label-default1">未分配</span>
+                <span v-else class="label1 label-primary1">{{li[k]}}</span>
+              </span>
+              <span v-else-if="k=='theme'" class="label label-primary">{{li[k]}}</span>
+              <span v-else-if="k=='doc_url'">
+                <a :href="li[k]" v-if="li[k]!==''" target="_blank">
+                  <span class="label label-success">在线文档</span>
+                </a>
+              </span>
+              <span v-else-if="li[k]==''">
+                无
+              </span>
+              <span v-else v-html='li[k].replace(/\r\n/g,"\<br\/\>")'></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    function sortByDate(list, key) {
+      _.each(list, function (v, i) {
+        try {
+          if (v[key] !== "") {
+            list[i][key] = moment(v[key]).unix()
+          }
+        } catch (err) {}
+      })
+      list = _.sortBy(list, function (num) {
+        return -num[key];
+      });
+      _.each(list, function (v, i) {
+        try {
+          if (v[key] !== "") {
+            list[i][key] = moment.unix(v[key]).format("YYYY-MM-DD")
+          }
+        } catch (err) {}
+      })
+      return list
+    }
+    new Vue({
+      el: '#app',
+      data: {
+        date:new Date(),
+        tableName: datas.name,
+        dataTh: datas.list[0],
+        list: datas.list.slice(1),
+      },
+      created: function () {
+        var vm = this;
+        vm.list = sortByDate(vm.list, "actual_time")
+        vm.list = sortByDate(vm.list, "plan_time")
+        
+      },
+      methods: {
+        moment:moment
+      }
+    })
+  </script>
+</body>
+
+</html>

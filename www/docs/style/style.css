@@ -1,0 +1,137 @@
+body {
+  background: #f5f5f5;
+}
+
+.sidebar {
+  border-radius: 4px;
+  transition: .2s;
+  border: 1px solid #eaeefb;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.15);
+  border-color: transparent;
+}
+
+.sidebar ul li.active a {
+  background: #42b983;
+  color: #fff;
+  padding: 5px;
+}
+
+.markdown-section pre {
+  display: block;
+  word-break: break-all;
+  word-wrap: break-word;
+  border: none;
+  border-radius: 5px;
+  line-height: 1.5;
+}
+
+.markdown-section {
+  background: #fff;
+  border-radius: 5px;
+  transition: .2s;
+  border: 1px solid #eaeefb;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.15);
+  border-color: transparent;
+  padding: 20px 30px;
+  min-width: 1000px;
+}
+
+.markdown-section strong {
+  font-weight: 800;
+  color: #666;
+}
+
+h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0e76bd;
+  margin: 20px auto 5px;
+  background: #e6f1f6;
+  padding: 5px 2px;
+  border-radius: 4px;
+}
+
+.markdown-section ul li ul {
+  margin: 0px auto 5px 20px;
+}
+
+.markdown-section li blockquote {
+  margin: 2px 0;
+  font-size: 13px;
+  font-weight: 100;
+}
+
+.markdown-section li blockquote p {
+  padding: 2px;
+  margin: 0
+}
+
+.markdown-section pre code {
+  padding: 1.2em 5px;
+}
+
+.app-nav {
+  position: fixed;
+  top: 1px;
+}
+
+.table {
+  width: 100%;
+}
+
+.sidebar h1 a {
+  font-weight: bold;
+  color: #42b983;
+}
+
+.button {
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  color: #fff;
+  background-color: #13ce66;
+  border-color: #13ce66;
+  margin-left: 5px;
+}
+
+.app-nav a.abutton {
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  color: #fff;
+  background-color: #13ce66;
+  border-color: #13ce66;
+  margin-left: 5px;
+}
+
+.app-nav a.abutton:hover {
+  color: #f8f8f8;
+}
+
+table tr.hideLog {
+  display: none;
+}
